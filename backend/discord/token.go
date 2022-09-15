@@ -6,48 +6,28 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strings"
 )
 
-const APIEndpoint = "https://discord.com/api/oauth2/token"
-
-type Config struct {
-	ClientID     string
-	ClientSecret string
-}
-
 type Handler struct {
-	config Config
+	token string
 }
 
-func New(config Config) *Handler {
-	return &Handler{config: config}
+func New(token string) *Handler {
+	return &Handler{token: token}
 }
 
-type verifyCodeRequest struct {
-	ClientID     string `json:"client_id"`
-	ClientSecret string `json:"client_secret"`
-	GrantType    string `json:"grant_type"`
-	Code         string `json:"code"`
-}
-
-func (h *Handler) VerifyCode(code string) (*User, error) {
-	u, err := url.Parse(APIEndpoint)
+func (h *Handler) GetMe() (*User, error) {
+	u, err := url.Parse("https://discord.com/api/v10/users/@me")
 	if err != nil {
 		return nil, err
 	}
 
-	marshalled, err := json.Marshal(verifyCodeRequest{
-		ClientID:     h.config.ClientID,
-		ClientSecret: h.config.ClientSecret,
-		GrantType:    "authorization_code",
-		Code:         code,
-	})
-
-	req, err := http.NewRequest("POST", u.String(), strings.NewReader(string(marshalled)))
+	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
+	req.Header.Set("Authorization", "Bearer "+h.token)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -63,5 +43,8 @@ func (h *Handler) VerifyCode(code string) (*User, error) {
 		return nil, merry.New("error occured trying to fetch token for code", merry.WithMessage(string(body)), merry.WithHTTPCode(res.StatusCode))
 	}
 
-	return nil, nil
+	var user User
+	_ = json.Unmarshal(body, &user)
+
+	return &user, nil
 }
