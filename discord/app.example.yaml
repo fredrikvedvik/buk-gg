@@ -1,0 +1,6 @@
+# [START discord_bot]
+runtime: nodejs16
+# [END discord_bot]
+
+env_variables:
+  DISCORD_TOKEN: ""

@@ -1,0 +1,12 @@
+steps:
+- name: node:16.x.x
+  entrypoint: npm
+  args: ["install"]
+- name: node:16.x.x
+  entrypoint: npm
+  args: ["run", "create-env"]
+  env:
+    - 'DISCORD_TOKEN=${DISCORD_TOKEN}'
+- name: "gcr.io/cloud-builders/gcloud"
+  args: ["app", "deploy"]
+timeout: "1600s"
