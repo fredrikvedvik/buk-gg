@@ -3,6 +3,8 @@ package database
 import (
 	"cloud.google.com/go/firestore"
 	"context"
+	status "github.com/ansel1/merry/v2/grpcstatus"
+	"google.golang.org/grpc/codes"
 )
 
 type Store struct {
@@ -21,12 +23,11 @@ func New(client *firestore.Client) *Store {
 }
 
 func get[T any](ctx context.Context, client *firestore.Client, collection string, key string) (*T, error) {
-	doc, err := client.Collection(collection).Doc(key).Get(ctx)
+	doc, err := client.Doc(collection + "/" + key).Get(ctx)
 	if err != nil {
-		return nil, err
-	}
-
-	if !doc.Exists() {
+		if status.Code(err) == codes.NotFound {
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -39,7 +40,7 @@ func get[T any](ctx context.Context, client *firestore.Client, collection string
 }
 
 func set[T any](ctx context.Context, client *firestore.Client, collection string, key string, value T) error {
-	ref := client.Collection(collection).Doc(key)
+	ref := client.Doc(collection + "/" + key)
 	_, err := ref.Set(ctx, value)
 	return err
 }

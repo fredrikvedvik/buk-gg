@@ -8,7 +8,7 @@ import (
 	"github.com/fredrikved/buk-gg/database"
 	"github.com/fredrikved/buk-gg/discord"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+	"github.com/samber/lo"
 	"log"
 )
 
@@ -27,13 +27,17 @@ func discordHandler(store *database.Store) gin.HandlerFunc {
 			return
 		}
 
+		if settings == nil {
+			settings = &common.Settings{}
+		}
+
 		if len(settings.DiscordIDs) >= 2 {
 			ctx.JSON(400, "you can not add another discord ID without removing an existing one")
 			return
 		}
 
 		if settings == nil {
-			settings = &common.Settings{ID: uuid.New()}
+			settings = &common.Settings{}
 		}
 
 		token := ctx.Param("token")
@@ -45,7 +49,7 @@ func discordHandler(store *database.Store) gin.HandlerFunc {
 		d := discord.New(token)
 		user, _ := d.GetMe()
 
-		if user != nil {
+		if user != nil && !lo.Contains(settings.DiscordIDs, user.ID) {
 			settings.DiscordIDs = append(settings.DiscordIDs, user.ID)
 			err = store.Settings().Set(ctx, personID.(string), *settings)
 			if err != nil {
@@ -55,7 +59,7 @@ func discordHandler(store *database.Store) gin.HandlerFunc {
 			}
 		}
 
-		ctx.JSON(200, user)
+		ctx.JSON(200, settings)
 	}
 }
 
