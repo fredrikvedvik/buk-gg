@@ -13,37 +13,10 @@ import (
 )
 
 func discordHandler(store *database.Store) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		personID, ok := ctx.Get(auth0.CtxPersonID)
-		if !ok {
-			ctx.JSON(404, "not found")
-			return
-		}
-
-		settings, err := store.Settings().Get(ctx, personID.(string))
-		if err != nil {
-			log.Default().Print("error occurred", err)
-			ctx.AbortWithStatus(500)
-			return
-		}
-
-		if settings == nil {
-			settings = &common.Settings{}
-		}
-
-		if len(settings.DiscordIDs) >= 2 {
-			ctx.JSON(400, "you can not add another discord ID without removing an existing one")
-			return
-		}
-
-		if settings == nil {
-			settings = &common.Settings{}
-		}
-
+	return withSettings(store, func(ctx *gin.Context, userID string, settings *common.Settings) (int, any) {
 		token := ctx.Param("token")
 		if token == "" {
-			ctx.AbortWithStatus(400)
-			return
+			return 400, ""
 		}
 
 		d := discord.New(token)
@@ -51,16 +24,49 @@ func discordHandler(store *database.Store) gin.HandlerFunc {
 
 		if user != nil && !lo.Contains(settings.DiscordIDs, user.ID) {
 			settings.DiscordIDs = append(settings.DiscordIDs, user.ID)
-			err = store.Settings().Set(ctx, personID.(string), *settings)
+			err := store.Settings().Set(ctx, userID, *settings)
 			if err != nil {
 				log.Default().Print("error occurred", err)
-				ctx.AbortWithStatus(500)
-				return
+				return 500, "error occurred"
 			}
 		}
 
-		ctx.JSON(200, settings)
+		return 200, settings
+	})
+}
+
+func withStatusAndResponse(f func(ctx *gin.Context) (int, any)) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		status, response := f(ctx)
+		ctx.JSON(status, response)
 	}
+}
+
+func withUserID(f func(ctx *gin.Context, userID string) (int, any)) gin.HandlerFunc {
+	return withStatusAndResponse(func(ctx *gin.Context) (int, any) {
+		personID, ok := ctx.Get(auth0.CtxPersonID)
+		if !ok {
+			return 404, "not found"
+		}
+
+		return f(ctx, personID.(string))
+	})
+}
+
+func withSettings(store *database.Store, f func(ctx *gin.Context, userID string, settings *common.Settings) (int, any)) gin.HandlerFunc {
+	return withUserID(func(ctx *gin.Context, userID string) (int, any) {
+		settings, err := store.Settings().Get(ctx, userID)
+		if err != nil {
+			log.Default().Print("error occurred", err)
+			return 500, "error occurred"
+		}
+
+		if settings == nil {
+			settings = &common.Settings{}
+		}
+
+		return f(ctx, userID, settings)
+	})
 }
 
 func main() {
