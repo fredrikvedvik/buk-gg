@@ -8,3 +8,10 @@ func (s *Store) Settings() *Collection[common.Settings] {
 		client:     s.client,
 	}
 }
+
+func (s *Store) Config() *Collection[common.Config] {
+	return &Collection[common.Config]{
+		collection: "config",
+		client:     s.client,
+	}
+}
