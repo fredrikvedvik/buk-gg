@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@auth0/auth0-vue': ^1.0.2
+  '@heroicons/vue': ^2.0.11
   '@types/node': ^18.7.18
   '@vitejs/plugin-vue': ^3.1.0
   autoprefixer: ^10.4.11
@@ -20,6 +21,7 @@ specifiers:
 
 dependencies:
   '@auth0/auth0-vue': 1.0.2_vue-router@4.1.5
+  '@heroicons/vue': 2.0.11_vue@3.2.39
   vue: 3.2.39
   vue-router: 4.1.5_vue@3.2.39
 
@@ -113,6 +115,14 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@heroicons/vue/2.0.11_vue@3.2.39:
+    resolution: {integrity: sha512-nTfN4aZVCP8Xntt9Q9RvH+vDagFHA4zFCUge6oCdkBrELH1i6K9feubvnEMhRIYdwC+nWULqKyJP7iVoWkR6Eg==}
+    peerDependencies:
+      vue: '>= 3'
+    dependencies:
+      vue: 3.2.39
+    dev: false
 
   /@humanwhocodes/config-array/0.10.4:
     resolution: {integrity: sha512-mXAIHxZT3Vcpg83opl1wGlVZ9xydbfZO3r5YfRSH6Gpp2J/PfdBP0wbDa2sO6/qRbcalpoevVyW6A/fI6LfeMw==}

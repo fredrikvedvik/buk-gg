@@ -35,6 +35,11 @@ export class Auth {
         const { isAuthenticated } = useAuth0()
         return isAuthenticated
     }
+
+    public static user() {
+        const { user } = useAuth0();
+        return user
+    }
 }
 
 export default Auth

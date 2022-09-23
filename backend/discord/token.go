@@ -1,9 +1,13 @@
 package discord
 
 type Handler struct {
-	token string
+	client    *Client
+	userToken string
 }
 
-func NewRequest(token string) *Handler {
-	return &Handler{token: token}
+func (c *Client) NewRequest(userToken string) *Handler {
+	return &Handler{
+		client:    c,
+		userToken: userToken,
+	}
 }

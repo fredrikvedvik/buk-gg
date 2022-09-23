@@ -14,18 +14,24 @@ import (
 )
 
 type handlers struct {
-	adminIDs []string
-	store    *database.Store
+	dc     *discord.Client
+	config *common.Config
+	store  *database.Store
 }
 
 func (h *handlers) discordHandler() gin.HandlerFunc {
+
 	return h.withSettings(func(ctx *gin.Context, userID string, settings *common.Settings) (int, any) {
-		token := ctx.Param("token")
-		if token == "" {
+		code := ctx.Param("code")
+		if code == "" {
 			return 400, ""
 		}
 
-		d := discord.NewRequest(token)
+		redirectUri := ctx.Query("redirectUri")
+
+		token, err := h.dc.GetUserAccessToken(code, redirectUri)
+
+		d := h.dc.NewRequest(token)
 		user, _ := d.GetMe()
 
 		if user == nil {
@@ -48,7 +54,13 @@ func (h *handlers) discordHandler() gin.HandlerFunc {
 			}
 			settings.Discords = append(settings.Discords, stored)
 		}
-		err := h.store.Settings().Set(ctx, userID, *settings)
+		err = h.store.Settings().Set(ctx, userID, *settings)
+		if err != nil {
+			log.Default().Print("error occurred", err)
+			return 500, "error occurred"
+		}
+
+		err = d.Join(h.config.GuildID, user.ID, []string{h.config.MemberRoleID})
 		if err != nil {
 			log.Default().Print("error occurred", err)
 			return 500, "error occurred"
@@ -91,7 +103,7 @@ func (h *handlers) settingsHandler() gin.HandlerFunc {
 
 func (h *handlers) getConfigHandler() gin.HandlerFunc {
 	return h.withUser(func(ctx *gin.Context, user *common.User) (int, any) {
-		if !lo.Contains(h.adminIDs, user.ID) {
+		if !lo.Contains(h.config.AdminIDs, user.ID) {
 			return 403, "no access"
 		}
 		config, err := h.store.Config().Get(ctx, "general")
@@ -104,7 +116,7 @@ func (h *handlers) getConfigHandler() gin.HandlerFunc {
 
 func (h *handlers) updateConfigHandler() gin.HandlerFunc {
 	return h.withUser(func(ctx *gin.Context, user *common.User) (int, any) {
-		if !lo.Contains(h.adminIDs, user.ID) {
+		if !lo.Contains(h.config.AdminIDs, user.ID) {
 			return 403, "no access"
 		}
 		var config common.Config
@@ -146,7 +158,7 @@ func (h *handlers) withUser(f func(ctx *gin.Context, user *common.User) (int, an
 
 		return f(ctx, &common.User{
 			ID:      userID,
-			IsAdmin: lo.Contains(h.adminIDs, userID),
+			IsAdmin: lo.Contains(h.config.AdminIDs, userID),
 		})
 	})
 }
@@ -192,8 +204,9 @@ func main() {
 	}
 
 	h := &handlers{
-		adminIDs: cfg.AdminIDs,
-		store:    store,
+		dc:     discord.New(config.Discord),
+		config: cfg,
+		store:  store,
 	}
 
 	r := gin.Default()
@@ -209,7 +222,7 @@ func main() {
 	r.GET("user", h.currentUserHandler())
 	r.GET("settings", h.settingsHandler())
 
-	r.POST("discord/:token", h.discordHandler())
+	r.POST("discord/:code", h.discordHandler())
 	r.DELETE("discord/:id", h.deleteDiscordHandler())
 
 	err = r.Run(":8002")

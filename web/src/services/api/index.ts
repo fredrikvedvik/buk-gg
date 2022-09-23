@@ -46,7 +46,7 @@ class API {
     }
 
     public connectDiscord(token: string) {
-        return this.post<Settings>("discord/" + token, null)
+        return this.post<Settings>("discord/" + token + "?redirectUri=" + encodeURI(window.location.origin + "/"), null)
     }
 
     public removeDiscord(id: string) {

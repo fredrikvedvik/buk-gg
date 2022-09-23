@@ -2,10 +2,12 @@ package discord
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/ansel1/merry/v2"
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type User struct {
@@ -35,7 +37,7 @@ func (h *Handler) GetMe() (*User, error) {
 		return nil, err
 	}
 
-	req.Header.Set("Authorization", "Bearer "+h.token)
+	req.Header.Set("Authorization", "Bearer "+h.userToken)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -48,11 +50,47 @@ func (h *Handler) GetMe() (*User, error) {
 	}
 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		return nil, merry.New("error occured trying to fetch token for code", merry.WithMessage(string(body)), merry.WithHTTPCode(res.StatusCode))
+		return nil, merry.New("error occurred trying to fetch userToken for code", merry.WithMessage(string(body)), merry.WithHTTPCode(res.StatusCode))
 	}
 
 	var user User
 	_ = json.Unmarshal(body, &user)
 
 	return &user, nil
+}
+
+func (h *Handler) Join(guildID string, userID string, roles []string) error {
+	u, err := url.Parse(fmt.Sprintf("https://discord.com/api/v10/guilds/%s/members/%s", guildID, userID))
+	if err != nil {
+		return err
+	}
+	reqBody := map[string]any{
+		"access_token": h.userToken,
+		"roles":        roles,
+	}
+
+	marshalled, _ := json.Marshal(reqBody)
+
+	req, err := http.NewRequest("PUT", u.String(), strings.NewReader(string(marshalled)))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Authorization", "Bot "+h.client.config.BotToken)
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode < 200 || res.StatusCode > 299 {
+		return merry.New("error occurred trying to fetch userToken for code", merry.WithMessage(string(body)), merry.WithHTTPCode(res.StatusCode))
+	}
+	return nil
 }
