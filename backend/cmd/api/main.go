@@ -228,7 +228,7 @@ func main() {
 
 	port := config.Port
 	if port == "" {
-		port = "8002"
+		port = "8080"
 	}
 
 	err = r.Run(fmt.Sprintf(":%s", port))
