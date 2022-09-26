@@ -8,4 +8,6 @@ RUN go mod download
 
 COPY ./backend .
 
+EXPOSE 8080
+
 ENTRYPOINT ["go", "run", "/app/cmd/api"]
