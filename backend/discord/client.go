@@ -24,6 +24,7 @@ func New(config Config) *Client {
 	}
 }
 
+// GetUserAccessToken create an access token for code.
 func (c *Client) GetUserAccessToken(code string, redirectUri string) (string, error) {
 	u, err := url.Parse("https://discord.com/api/v10/oauth2/token")
 	if err != nil {
