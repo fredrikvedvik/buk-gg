@@ -1,0 +1,11 @@
+FROM golang:1.19-alpine
+
+WORKDIR /app
+
+COPY ./backend/go.mod ./
+COPY ./backend/go.sum ./
+RUN go mod download
+
+COPY ./backend .
+
+ENTRYPOINT ["go", "run", "/app/cmd/api"]
