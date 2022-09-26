@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/fredrikved/buk-gg/auth0"
-	"github.com/fredrikved/buk-gg/discord"
+	"github.com/fredrikved/buk-gg/backend/auth0"
+	"github.com/fredrikved/buk-gg/backend/discord"
 	"os"
 	"strings"
 )

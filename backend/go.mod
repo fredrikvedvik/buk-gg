@@ -1,4 +1,4 @@
-module github.com/fredrikved/buk-gg
+module github.com/fredrikved/buk-gg/backend
 
 go 1.19
 
@@ -7,7 +7,6 @@ require (
 	github.com/ansel1/merry/v2 v2.0.1
 	github.com/auth0/go-jwt-middleware/v2 v2.0.1
 	github.com/gin-gonic/gin v1.8.1
-	github.com/google/uuid v1.3.0
 	github.com/samber/lo v1.28.2
 )
 

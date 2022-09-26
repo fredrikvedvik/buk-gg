@@ -1,6 +1,6 @@
 package database
 
-import "github.com/fredrikved/buk-gg/common"
+import "github.com/fredrikved/buk-gg/backend/common"
 
 func (s *Store) Settings() *Collection[common.Settings] {
 	return &Collection[common.Settings]{
