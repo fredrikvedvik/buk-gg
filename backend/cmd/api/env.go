@@ -12,6 +12,7 @@ type firestoreConfig struct {
 }
 
 type envConfig struct {
+	Port      string
 	Auth0     auth0.Config
 	Firestore firestoreConfig
 	Discord   discord.Config
@@ -20,6 +21,7 @@ type envConfig struct {
 func getEnvConfig() envConfig {
 	audiences := strings.Split(os.Getenv("AUTH0_AUDIENCES"), ",")
 	return envConfig{
+		Port: os.Getenv("PORT"),
 		Discord: discord.Config{
 			ClientID:     os.Getenv("DISCORD_CLIENT_ID"),
 			ClientSecret: os.Getenv("DISCORD_CLIENT_SECRET"),

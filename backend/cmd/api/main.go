@@ -3,6 +3,7 @@ package main
 import (
 	"cloud.google.com/go/firestore"
 	"context"
+	"fmt"
 	"github.com/fredrikved/buk-gg/backend/auth0"
 	"github.com/fredrikved/buk-gg/backend/common"
 	"github.com/fredrikved/buk-gg/backend/database"
@@ -225,7 +226,12 @@ func main() {
 	r.POST("discord/:code", h.discordHandler())
 	r.DELETE("discord/:id", h.deleteDiscordHandler())
 
-	err = r.Run(":8002")
+	port := config.Port
+	if port == "" {
+		port = "8002"
+	}
+
+	err = r.Run(fmt.Sprintf(":%s", port))
 	if err != nil {
 		panic(err)
 	}
