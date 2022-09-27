@@ -23,7 +23,7 @@ func New(client *firestore.Client) *Store {
 }
 
 func get[T any](ctx context.Context, client *firestore.Client, collection string, key string) (*T, error) {
-	doc, err := client.Doc(collection + "/" + key).Get(ctx)
+	doc, err := client.Collection(collection).Doc(key).Get(ctx)
 	if err != nil {
 		if status.Code(err) == codes.NotFound {
 			return nil, nil
@@ -40,7 +40,7 @@ func get[T any](ctx context.Context, client *firestore.Client, collection string
 }
 
 func set[T any](ctx context.Context, client *firestore.Client, collection string, key string, value T) error {
-	ref := client.Doc(collection + "/" + key)
+	ref := client.Collection(collection).Doc(key)
 	_, err := ref.Set(ctx, value)
 	return err
 }
