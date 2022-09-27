@@ -33,7 +33,12 @@ func (h *handlers) discordHandler() gin.HandlerFunc {
 		token, err := h.dc.GetUserAccessToken(code, redirectUri)
 
 		d := h.dc.NewRequest(token)
-		user, _ := d.GetMe()
+		user, err := d.GetMe()
+
+		if err != nil {
+			log.Default().Print(err)
+			return 500, err
+		}
 
 		if user == nil {
 			return 200, settings
