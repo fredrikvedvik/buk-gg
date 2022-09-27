@@ -12,6 +12,7 @@
     </div>
 </template>
 <script lang="ts" setup>
+import api from '@/services/api';
 import { Settings } from '@/services/api/types';
 import { login, removeDiscord } from '@/services/discord';
 import { XMarkIcon } from "@heroicons/vue/24/solid"
@@ -19,4 +20,8 @@ import { XMarkIcon } from "@heroicons/vue/24/solid"
 defineProps<{
     settings: Settings
 }>()
+
+// api.getGuilds().then(r => {
+//     console.log(r)
+// })
 </script>

@@ -1,6 +1,7 @@
 package discord
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -23,6 +24,17 @@ func New(config Config) *Client {
 		config: &config,
 	}
 }
+
+func (c *Client) GetGuild(ctx context.Context, id string) (*Guild, error) {
+	return get[Guild](ctx, c, "guilds/"+id)
+}
+
+func (c *Client) RemoveMember(ctx context.Context, guildID string, id string) error {
+	_, err := sendDelete[any](ctx, c, "guilds/"+guildID+"/members/"+id)
+	return err
+}
+
+//func (c *Client) GetMember(ctx context.Context, guild string, id string)
 
 // GetUserAccessToken create an access token for code.
 func (c *Client) GetUserAccessToken(code string, redirectUri string) (string, error) {

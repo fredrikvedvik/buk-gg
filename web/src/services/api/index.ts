@@ -1,6 +1,6 @@
 import { api } from "@/config";
 import Auth from "../auth";
-import { Config, Settings, User } from "./types";
+import { Config, Guild, Settings, User } from "./types";
 export * from "./types"
 
 class API {
@@ -67,6 +67,10 @@ class API {
 
     public setConfig(config: Config) {
         return this.post<Config>("config", config)
+    }
+
+    public getGuilds() {
+        return this.get<Guild[]>("guilds")
     }
 }
 

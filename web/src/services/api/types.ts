@@ -15,6 +15,12 @@ export type User = {
 
 export type Config = {
     adminIds: string[]
-    guildId: string
+    guildIds: string[]
     memberRoleId: string
+}
+
+export type Guild = {
+    id: string
+    name: string
+    icon: string
 }

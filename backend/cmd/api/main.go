@@ -4,6 +4,7 @@ import (
 	"cloud.google.com/go/firestore"
 	"context"
 	"fmt"
+	cache "github.com/Code-Hex/go-generics-cache"
 	"github.com/fredrikved/buk-gg/backend/auth0"
 	"github.com/fredrikved/buk-gg/backend/common"
 	"github.com/fredrikved/buk-gg/backend/database"
@@ -12,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/samber/lo"
 	"log"
+	"time"
 )
 
 type handlers struct {
@@ -20,8 +22,37 @@ type handlers struct {
 	store  *database.Store
 }
 
-func (h *handlers) discordHandler() gin.HandlerFunc {
+var guildCache = cache.New[string, *common.Guild]()
 
+func (h *handlers) guildsHandler() gin.HandlerFunc {
+	return h.withSettings(func(ctx *gin.Context, userID string, settings *common.Settings) (int, any) {
+		guilds := lo.Map(h.config.GuildIDs, func(id string, _ int) *common.Guild {
+			g, ok := guildCache.Get(id)
+			if ok {
+				return g
+			}
+			dg, _ := h.dc.GetGuild(ctx, id)
+
+			g = &common.Guild{
+				ID:   dg.Id,
+				Icon: fmt.Sprintf("https://cdn.discordapp.com/icons/%s/%s.gif", dg.Id, dg.Icon),
+				Name: dg.Name,
+			}
+			guildCache.Set(id, g, cache.WithExpiration(time.Minute*5))
+			return g
+		})
+
+		return 200, lo.Map(guilds, func(i *common.Guild, _ int) *common.Guild {
+			return &common.Guild{
+				ID:   i.ID,
+				Icon: i.Icon,
+				Name: i.Name,
+			}
+		})
+	})
+}
+
+func (h *handlers) discordHandler() gin.HandlerFunc {
 	return h.withSettings(func(ctx *gin.Context, userID string, settings *common.Settings) (int, any) {
 		code := ctx.Param("code")
 		if code == "" {
@@ -66,7 +97,7 @@ func (h *handlers) discordHandler() gin.HandlerFunc {
 			return 500, "error occurred"
 		}
 
-		err = d.Join(h.config.GuildID, user.ID, []string{h.config.MemberRoleID})
+		err = d.Join(h.config.GuildIDs[0], user.ID, []string{h.config.MemberRoleID})
 		if err != nil {
 			log.Default().Print("error occurred", err)
 			return 500, "error occurred"
@@ -95,6 +126,11 @@ func (h *handlers) deleteDiscordHandler() gin.HandlerFunc {
 			}
 		} else {
 			return 200, "id not found"
+		}
+
+		err := h.dc.RemoveMember(ctx, h.config.GuildIDs[0], id)
+		if err != nil {
+			log.Default().Print(err)
 		}
 
 		return 200, settings
@@ -136,6 +172,8 @@ func (h *handlers) updateConfigHandler() gin.HandlerFunc {
 		if err != nil {
 			return 500, err
 		}
+
+		h.config = &config
 		return 200, config
 	})
 }
@@ -224,6 +262,7 @@ func main() {
 	r.Use(auth.ValidateToken())
 	r.GET("config", h.getConfigHandler())
 	r.POST("config", h.updateConfigHandler())
+	r.GET("guilds", h.guildsHandler())
 
 	r.GET("user", h.currentUserHandler())
 	r.GET("settings", h.settingsHandler())

@@ -11,9 +11,16 @@ type DiscordUser struct {
 }
 
 type Config struct {
-	GuildID      string   `json:"guildId"`
+	GuildIDs     []string `json:"guildIds"`
 	MemberRoleID string   `json:"memberRoleId"`
 	AdminIDs     []string `json:"adminIds"`
+}
+
+type Guild struct {
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Icon   string `json:"icon"`
+	Joined bool   `json:"joined"`
 }
 
 type User struct {
