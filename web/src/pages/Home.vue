@@ -11,6 +11,7 @@
                     <button class="ml-auto bg-red-500 p-2 rounded px-3" @click="logout">Logout</button>
                 </div>
                 <Discord v-if="settings !== null" :settings="settings"></Discord>
+                <div v-if="loading">Loading...</div>
             </div>
         </div>
     </div>
@@ -22,10 +23,13 @@ import Discord from './Discord.vue';
 import settings from "@/services/settings"
 import user from "@/services/user"
 import Admin from "./Admin.vue"
+import { ref } from 'vue';
 
 const logout = Auth.signOut;
 
 const u = Auth.user();
+
+const loading = ref(true)
 
 const authenticated = Auth.isAuthenticated();
 if (!authenticated.value) {
@@ -33,9 +37,13 @@ if (!authenticated.value) {
 } else {
     api.getUser().then(r => {
         user.value = r
+
+        loading.value = false
     })
     api.getSettings().then(r => {
         settings.value = r
+
+        loading.value = false
     });
 }
 </script>
