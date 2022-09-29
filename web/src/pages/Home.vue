@@ -1,6 +1,7 @@
 <template>
     <div class="flex h-full w-full" v-if="authenticated">
-        <div class="fixed top-0 right-0 z-10" v-if="user?.isAdmin">
+        <div class="fixed w-full h-full bg-cover bg-no-repeat z-0 blur-xl opacity-10" style="background-image: url('bg.svg')"></div>
+        <div class="fixed top-0 right-0 z-20" v-if="user?.isAdmin">
             <Admin></Admin>
         </div>
         <div v-if="settings === null" wire:loading class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden opacity-75 flex flex-col items-center justify-center">
@@ -11,12 +12,12 @@
             <h2 class="text-center text-white text-xl font-semibold">Loading...</h2>
             <p class="w-1/3 text-center text-white">This may take a few moments</p>
         </div>
-        <div v-else class="m-auto">
-            <div class="bg-slate-800 p-8 rounded rounded-lg w-screen max-w-sm">
+        <div v-else class="m-auto z-10">
+            <div class="bg-slate-800 p-8 rounded rounded-lg w-screen max-w-sm shadow-xl">
                 <img class="invert mb-8 mx-auto" src="/logo.svg" />
                 <div class="flex mb-2 gap-4">
                     <p class="my-auto text-md"><span class="text-lg">{{u.name}}</span></p>
-                    <button class="ml-auto bg-red-500 p-2 rounded px-3" @click="logout">Logout</button>
+                    <button class="ml-auto bg-red-500 p-2 rounded px-3 hover:bg-red-600 transition duration-100 hover:-translate-y-0.5 uppercase" @click="logout">Logout</button>
                 </div>
                 <Discord v-if="settings !== null" :settings="settings"></Discord>
                 <div v-if="loading">Loading...</div>
