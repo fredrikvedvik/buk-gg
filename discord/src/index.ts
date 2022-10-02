@@ -27,30 +27,9 @@ export class Application {
             ],
         })
 
-        this.client.on("guildMemberAdd", member => {
-            if (member.user.bot)
-                return;
-            
-            if (member.pending)
-                return;
-            
-            verifyUser(this, member)
-        })
-
-        this.client.on("guildMemberUpdate", (oldMember, newMember) => {
-            if (oldMember.user.bot) 
-                return;
-            
-            if (!(oldMember.pending && !newMember.pending)) 
-                return;
-            
-            verifyUser(this, newMember)
-        })
-
         this.client.on("voiceStateUpdate", handleVoiceStateUpdate(this))
         
         await this.client.login(process.env.DISCORD_TOKEN)
-        console.log("Logged in as " + this.client.user?.username)
     }
 }
 

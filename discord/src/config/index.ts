@@ -1,6 +1,5 @@
-import { getOrSet } from "src/storage"
+import { getOrSet } from "@/storage"
 import { Config } from "./types"
-import "./web"
 
 export * from "./types"
 
