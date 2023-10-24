@@ -37,9 +37,24 @@
         </div>
         <div v-else class="m-auto z-10">
             <div
-                class="bg-slate-800 p-8 rounded-lg w-screen max-w-sm shadow-xl"
+                class="bg-slate-800 p-8 rounded-lg w-screen max-w-sm shadow-xl flex flex-col gap-4"
             >
                 <img class="invert mb-8 mx-auto" src="/logo.svg" />
+                <div class="text-white flex gap-2">
+                    <a
+                        href="/info.pdf"
+                        target="_blank"
+                        class="bg-gray-700 rounded-lg p-2 hover:-translate-y-0.5 transition duration-100"
+                        >Retningslinjer</a
+                    >
+                    <a
+                        href="/spillvurdering.pdf"
+                        target="_blank"
+                        class="bg-gray-700 rounded-lg p-2 hover:-translate-y-0.5 transition duration-100"
+                        >Spillvurderinger</a
+                    >
+                </div>
+                <hr class="border-gray-700" />
                 <div class="flex mb-2 gap-4">
                     <p class="my-auto text-md">
                         <span class="text-lg">{{ u.name }}</span>
@@ -53,18 +68,6 @@
                 </div>
                 <div v-if="settings !== null">
                     <Discord :settings="settings"></Discord>
-                    <div class="p-4 text-blue-500">
-                        <ul class="flex flex-col gap-2">
-                            <li>
-                                <a href="/info.pdf" target="_blank">Info.pdf</a>
-                            </li>
-                            <li>
-                                <a href="/spillvurdering.pdf" target="_blank"
-                                    >Spillvurdering.pdf</a
-                                >
-                            </li>
-                        </ul>
-                    </div>
                 </div>
                 <div v-if="loading">Loading...</div>
             </div>
