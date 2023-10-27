@@ -52,16 +52,16 @@
                     </button>
                 </div>
                 <hr class="border-gray-700" />
-                <div class="text-white flex gap-2">
+                <div class="text-white flex gap-2 flex-wrap">
                     <router-link
                         to="/rules"
-                        class="bg-gray-700 rounded-lg p-2 hover:-translate-y-0.5 transition duration-100"
+                        class="bg-blue-700 rounded-lg p-2 hover:-translate-y-0.5 transition duration-100"
                     >
                         Retningslinjer
                     </router-link>
                     <router-link
                         to="/games"
-                        class="bg-gray-700 rounded-lg p-2 hover:-translate-y-0.5 transition duration-100"
+                        class="bg-yellow-600 rounded-lg p-2 hover:-translate-y-0.5 transition duration-100"
                     >
                         Spillvurderinger
                     </router-link>

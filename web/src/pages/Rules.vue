@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { nextTick, onMounted, ref } from "vue";
 import { Converter } from "showdown";
 
 const html = ref<string>();
+const element = ref<HTMLDivElement>();
 
 onMounted(async () => {
     const res = await fetch("/rules.md");
@@ -13,12 +14,17 @@ onMounted(async () => {
         tablesHeaderId: true,
     });
     html.value = converter.makeHtml(md);
+
+    await nextTick();
+
+    element.value?.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 </script>
 
 <template>
     <div
-        class="rounded prose prose-md prose-invert text-left prose-neutral"
+        ref="element"
+        class="rounded pt-4 prose prose-md prose-invert text-left prose-neutral"
         v-html="html"
     ></div>
 </template>
