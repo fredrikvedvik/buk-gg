@@ -4,9 +4,9 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                barlow: ["'Barlow'", "sans-serif"]
-            }
+                barlow: ["'Barlow'", "sans-serif"],
+            },
         },
     },
-    plugins: [],
+    plugins: [require("@tailwindcss/typography")],
 };

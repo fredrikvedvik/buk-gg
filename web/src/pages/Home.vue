@@ -40,21 +40,6 @@
                 class="bg-slate-800 p-8 rounded-lg w-screen max-w-sm shadow-xl flex flex-col gap-4"
             >
                 <img class="invert mb-8 mx-auto" src="/logo.svg" />
-                <div class="text-white flex gap-2">
-                    <a
-                        href="/info.pdf"
-                        target="_blank"
-                        class="bg-gray-700 rounded-lg p-2 hover:-translate-y-0.5 transition duration-100"
-                        >Retningslinjer</a
-                    >
-                    <a
-                        href="/spillvurdering.pdf"
-                        target="_blank"
-                        class="bg-gray-700 rounded-lg p-2 hover:-translate-y-0.5 transition duration-100"
-                        >Spillvurderinger</a
-                    >
-                </div>
-                <hr class="border-gray-700" />
                 <div class="flex mb-2 gap-4">
                     <p class="my-auto text-md">
                         <span class="text-lg">{{ u.name }}</span>
@@ -66,8 +51,29 @@
                         Logout
                     </button>
                 </div>
+                <hr class="border-gray-700" />
+                <div class="text-white flex gap-2">
+                    <router-link
+                        to="/rules"
+                        class="bg-gray-700 rounded-lg p-2 hover:-translate-y-0.5 transition duration-100"
+                    >
+                        Retningslinjer
+                    </router-link>
+                    <router-link
+                        to="/games"
+                        class="bg-gray-700 rounded-lg p-2 hover:-translate-y-0.5 transition duration-100"
+                    >
+                        Spillvurderinger
+                    </router-link>
+                    <router-link
+                        to="/"
+                        class="bg-gray-700 rounded-lg p-2 hover:-translate-y-0.5 transition duration-100"
+                    >
+                        Discord
+                    </router-link>
+                </div>
                 <div v-if="settings !== null">
-                    <Discord :settings="settings"></Discord>
+                    <router-view :settings="settings"></router-view>
                 </div>
                 <div v-if="loading">Loading...</div>
             </div>
