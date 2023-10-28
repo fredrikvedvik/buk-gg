@@ -42,7 +42,7 @@
                 <img class="invert mb-8 mx-auto" src="/logo.svg" />
                 <div class="flex mb-2 gap-4">
                     <p class="my-auto text-md">
-                        <span class="text-lg">{{ u.name }}</span>
+                        <span class="text-lg">{{ u?.name }}</span>
                     </p>
                     <button
                         class="ml-auto bg-red-500 p-2 rounded px-3 hover:bg-red-600 transition duration-100 hover:-translate-y-0.5 uppercase"
