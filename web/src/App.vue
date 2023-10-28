@@ -1,10 +1,10 @@
 <template>
-    <div class="h-screen w-screen" v-if="!loading">
+    <div class="h-screen w-screen" v-if="!isLoading">
         <router-view></router-view>
     </div>
 </template>
 <script setup lang="ts">
-import Auth from './services/auth';
+import { useAuth0 } from "@auth0/auth0-vue";
 
-const loading = Auth.loading()
+const { isLoading } = useAuth0();
 </script>
