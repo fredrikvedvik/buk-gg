@@ -83,7 +83,6 @@
 <script lang="ts" setup>
 import api from "@/services/api";
 import Auth from "@/services/auth";
-import Discord from "./Discord.vue";
 import settings from "@/services/settings";
 import user from "@/services/user";
 import Admin from "./Admin.vue";

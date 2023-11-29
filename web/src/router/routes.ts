@@ -23,4 +23,9 @@ export default [
             },
         ],
     },
+    {
+        path: "/discord",
+        name: "discord-redirect",
+        component: () => import("@/pages/Home.vue"),
+    },
 ] as RouteRecordRaw[];

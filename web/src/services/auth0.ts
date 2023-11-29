@@ -9,6 +9,8 @@ const plugin = createAuth0({
         scope: "openid profile email",
         redirect_uri: window.location.origin,
     },
+    cacheLocation: "localstorage",
+    useRefreshTokens: true,
 });
 
 export default plugin;
